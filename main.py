@@ -107,8 +107,8 @@ def MINIST_Tutorial():
                 train_losses.append(loss.item())
                 train_counter.append(
                     (batch_idx * 64) + ((epoch - 1) * len(train_loader.dataset)))
-                torch.save(network.state_dict(), '/Users/jiahuizou/Desktop/6140/project4/model.pth')
-                torch.save(optimizer.state_dict(), '/Users/jiahuizou/Desktop/6140/project4/optimizer.pth')
+                torch.save(network.state_dict(), f"{file_location}/model.pth")
+                torch.save(optimizer.state_dict(), f"{file_location}/optimizer.pth")
 
     def test():
         network.eval()
