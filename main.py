@@ -4,15 +4,19 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import matplotlib as mpl
 
+mpl.use('TkAgg')
 
 # This is a sample Python script.
 
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+file_location = '/Users/YihanXu/Desktop/CS6140/project 4'
 
 
 def MINIST_Tutorial():
+    # setting up hyper parameters
     n_epochs = 3
     batch_size_train = 64
     batch_size_test = 1000
@@ -24,8 +28,9 @@ def MINIST_Tutorial():
     torch.backends.cudnn.enabled = False
     torch.manual_seed(random_seed)
 
+    # loading dataset
     train_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.MNIST('/Users/jiahuizou/Desktop/6140/project4', train=True, download=True,
+        torchvision.datasets.MNIST(file_location, train=True, download=True,
                                    transform=torchvision.transforms.Compose([
                                        torchvision.transforms.ToTensor(),
                                        torchvision.transforms.Normalize(
@@ -34,7 +39,7 @@ def MINIST_Tutorial():
         batch_size=batch_size_train, shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.MNIST('/Users/jiahuizou/Desktop/6140/project4', train=False, download=True,
+        torchvision.datasets.MNIST(file_location, train=False, download=True,
                                    transform=torchvision.transforms.Compose([
                                        torchvision.transforms.ToTensor(),
                                        torchvision.transforms.Normalize(
@@ -47,16 +52,18 @@ def MINIST_Tutorial():
 
     print(example_data.shape)
 
-    fig = plt.figure()
+    # plotting some examples
+    plt.figure()
     for i in range(6):
         plt.subplot(2, 3, i + 1)
         plt.tight_layout()
-        plt.imshow(example_data[i+20][0], cmap='gray', interpolation='none')
+        plt.imshow(example_data[i + 20][0], cmap='gray', interpolation='none')
         plt.title("Ground Truth: {}".format(example_targets[i]))
         plt.xticks([])
         plt.yticks([])
     plt.show()
 
+    # building the neural network
     class Net(nn.Module):
         def __init__(self):
             super(Net, self).__init__()
@@ -79,6 +86,7 @@ def MINIST_Tutorial():
     optimizer = optim.SGD(network.parameters(), lr=learning_rate,
                           momentum=momentum)
 
+    # train the model
     train_losses = []
     train_counter = []
     test_losses = []
@@ -123,6 +131,7 @@ def MINIST_Tutorial():
         train(epoch)
         test()
 
+    # evaluate the model by printing the loss
     fig = plt.figure()
     plt.plot(train_counter, train_losses, color='blue')
     plt.scatter(test_counter, test_losses, color='red')
@@ -134,11 +143,12 @@ def MINIST_Tutorial():
     with torch.no_grad():
         output = network(example_data)
 
-    fig = plt.figure()
-    for i in range(6):
+    # evaluate the model by plotting 8 examples
+    plt.figure()
+    for i in range(8):
         plt.subplot(2, 3, i + 1)
         plt.tight_layout()
-        plt.imshow(example_data[i+20][0], cmap='gray', interpolation='none')
+        plt.imshow(example_data[i + 20][0], cmap='gray', interpolation='none')
         plt.title("Prediction: {}".format(
             output.data.max(1, keepdim=True)[1][i].item()))
         plt.xticks([])
