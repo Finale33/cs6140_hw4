@@ -145,7 +145,7 @@ def MINIST_Tutorial():
 
     # evaluate the model by plotting 8 examples
     plt.figure()
-    for i in range(8):
+    for i in range(9):
         plt.subplot(2, 3, i + 1)
         plt.tight_layout()
         plt.imshow(example_data[i + 20][0], cmap='gray', interpolation='none')
