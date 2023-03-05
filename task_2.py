@@ -10,19 +10,12 @@ from sklearn.metrics import confusion_matrix
 
 mpl.use('TkAgg')
 
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 file_location = '/Users/YihanXu/Desktop/CS6140/project 4'
 
 
-def MINIST_Fashion():
+def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_filters_1, num_filters_2):
     # setting up hyper parameters
-    n_epochs = 3
-    batch_size_train = 64
     batch_size_test = 1000
-    learning_rate = 0.01
     momentum = 0.5
     log_interval = 10
 
@@ -33,20 +26,20 @@ def MINIST_Fashion():
     # loading dataset
     train_loader = torch.utils.data.DataLoader(
         torchvision.datasets.FashionMNIST(file_location, train=True, download=True,
-                                   transform=torchvision.transforms.Compose([
-                                       torchvision.transforms.ToTensor(),
-                                       torchvision.transforms.Normalize(
-                                           (0.5,), (0.5,))
-                                   ])),
+                                          transform=torchvision.transforms.Compose([
+                                              torchvision.transforms.ToTensor(),
+                                              torchvision.transforms.Normalize(
+                                                  (0.5,), (0.5,))
+                                          ])),
         batch_size=batch_size_train, shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
         torchvision.datasets.FashionMNIST(file_location, train=False, download=True,
-                                   transform=torchvision.transforms.Compose([
-                                       torchvision.transforms.ToTensor(),
-                                       torchvision.transforms.Normalize(
-                                           (0.5,), (0.5,))
-                                   ])),
+                                          transform=torchvision.transforms.Compose([
+                                              torchvision.transforms.ToTensor(),
+                                              torchvision.transforms.Normalize(
+                                                  (0.5,), (0.5,))
+                                          ])),
         batch_size=batch_size_test, shuffle=True)
 
     examples = enumerate(test_loader)
@@ -69,18 +62,18 @@ def MINIST_Fashion():
     class Net(nn.Module):
         def __init__(self):
             super(Net, self).__init__()
-            self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-            self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+            self.conv1 = nn.Conv2d(1, num_filters_1, kernel_size=5)
+            self.conv2 = nn.Conv2d(num_filters_1, num_filters_2, kernel_size=5)
             self.conv2_drop = nn.Dropout2d()
-            self.fc1 = nn.Linear(320, 50)
+            self.fc1 = nn.Linear(num_filters_2 * 16, 50)
             self.fc2 = nn.Linear(50, 10)
 
         def forward(self, x):
             x = F.relu(F.max_pool2d(self.conv1(x), 2))
             x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-            x = x.view(-1, 320)
+            x = x.view(-1, num_filters_2 * 16)
             x = F.relu(self.fc1(x))
-            x = F.dropout(x, p=0.1, training=self.training)
+            x = F.dropout(x, p=dropout_rate, training=self.training)
             x = self.fc2(x)
             return F.log_softmax(x)
 
@@ -168,7 +161,7 @@ def MINIST_Fashion():
 
     # evaluate the model by plotting 8 examples
     plt.figure()
-    for i in range(9):
+    for i in range(6):
         plt.subplot(2, 3, i + 1)
         plt.tight_layout()
         plt.imshow(example_data[i + 20][0], cmap='gray', interpolation='none')
@@ -181,4 +174,6 @@ def MINIST_Fashion():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    MINIST_Fashion()
+    MINIST_Fashion(3, 64, 0.1, 0.01, 10, 20)
+    # we can test each dimension one by one
+    # find the optimal and print for each dimension
