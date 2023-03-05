@@ -5,6 +5,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import matplotlib as mpl
+import time
+from sklearn.metrics import confusion_matrix
 
 mpl.use('TkAgg')
 
@@ -15,7 +17,7 @@ mpl.use('TkAgg')
 file_location = '/Users/YihanXu/Desktop/CS6140/project 4'
 
 
-def MINIST_Tutorial():
+def MINIST_Fashion():
     # setting up hyper parameters
     n_epochs = 3
     batch_size_train = 64
@@ -78,7 +80,7 @@ def MINIST_Tutorial():
             x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
             x = x.view(-1, 320)
             x = F.relu(self.fc1(x))
-            x = F.dropout(x, training=self.training)
+            x = F.dropout(x, p=0.1, training=self.training)
             x = self.fc2(x)
             return F.log_softmax(x)
 
@@ -91,6 +93,7 @@ def MINIST_Tutorial():
     train_counter = []
     test_losses = []
     test_counter = [i * len(train_loader.dataset) for i in range(n_epochs + 1)]
+    time_start = time.time()
 
     def train(epoch):
         network.train()
@@ -120,11 +123,31 @@ def MINIST_Tutorial():
                 test_loss += F.nll_loss(output, target, size_average=False).item()
                 pred = output.data.max(1, keepdim=True)[1]
                 correct += pred.eq(target.data.view_as(pred)).sum()
+        time_stop = time.time()
         test_loss /= len(test_loader.dataset)
         test_losses.append(test_loss)
         print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset)))
+
+        # evaluate the model by printing confusion matrix
+        y_true = []
+        y_pred = []
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        with torch.no_grad():
+            for images, labels in test_loader:
+                images = images.to(device)
+                labels = labels.to(device)
+                outputs = network(images)
+                _, predicted = torch.max(outputs.data, 1)
+                y_true.extend(labels.cpu().numpy())
+                y_pred.extend(predicted.cpu().numpy())
+        cm = confusion_matrix(y_true, y_pred)
+        print(cm)
+
+        # evaluate the model by printing time used
+        time_spent = time_stop - time_start
+        print(f"time spent: {round(time_spent)} s")
 
     test()
     for epoch in range(1, n_epochs + 1):
@@ -158,6 +181,4 @@ def MINIST_Tutorial():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    MINIST_Tutorial()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    MINIST_Fashion()

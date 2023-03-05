@@ -8,10 +8,6 @@ import matplotlib as mpl
 
 mpl.use('TkAgg')
 
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 file_location = '/Users/YihanXu/Desktop/CS6140/project 4'
 
 
@@ -159,5 +155,3 @@ def MINIST_Tutorial():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     MINIST_Tutorial()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
