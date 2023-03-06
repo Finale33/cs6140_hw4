@@ -122,6 +122,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset)))
+        accuracy = 100. * correct / len(test_loader.dataset)
 
         # evaluate the model by printing confusion matrix
         y_true = []
@@ -139,10 +140,11 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         print(cm)
 
         # evaluate the model by printing time used
-        time_spent = time_stop - time_start
-        print(f"time spent: {round(time_spent)} s")
+        time_spent = round(time_stop - time_start)
+        print(f"time spent: {time_spent} s")
+        return accuracy, time_spent
 
-    test()
+    accuracy, time_spent = test()
     for epoch in range(1, n_epochs + 1):
         train(epoch)
         test()
@@ -170,10 +172,79 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         plt.xticks([])
         plt.yticks([])
     plt.show()
+    return accuracy, time_spent
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    MINIST_Fashion(3, 64, 0.1, 0.01, 10, 20)
-    # we can test each dimension one by one
-    # find the optimal and print for each dimension
+    DEFAULT_N_EPOCH = 3
+    DEFAULT_BATCH_SIZE = 64
+    DEFAULT_DROPOUT_RATE = 0.5
+    DEFAULT_LEARNING_RATE = 0.01
+    DEFAULT_NUM_FILTERS_1 = 10
+    DEFAULT_NUM_FILTERS_2 = 20
+
+    # try number of epochs = 20 to find out the optimal number of epoch.
+    # MINIST_Fashion(20, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1,
+    #                DEFAULT_NUM_FILTERS_2)
+
+    # try different drop out rate to find the optimal dropout rate
+    best_dropout_rate = DEFAULT_DROPOUT_RATE
+    best_accuracy = 0.00
+    for dropout_rate in [0.01, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5]:
+        dropout_rate = dropout_rate * 0.01
+        accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, dropout_rate, DEFAULT_LEARNING_RATE,
+                                              DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_dropout_rate = dropout_rate
+    print(f"the best dropout rate is: {best_dropout_rate}, and the accuracy is: {best_accuracy}")
+
+    # # try different learning rate to find the optimal
+    # best_learning_rate = DEFAULT_LEARNING_RATE
+    # best_accuracy = 0
+    # for learning_rate in range(1, 15):
+    #     learning_rate = learning_rate * 0.01
+    #     accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, learning_rate,
+    #                                           DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+    #     if accuracy > best_accuracy:
+    #         best_accuracy = accuracy
+    #         best_learning_rate = learning_rate
+    #
+    # # try different batch size to the find the optimal
+    # best_batch_size = DEFAULT_BATCH_SIZE
+    # batch_size = DEFAULT_BATCH_SIZE
+    # accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
+    #                                       DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+    # prev_time_spent = time_spent
+    # while True:
+    #     batch_size = batch_size * 2
+    #     try:
+    #         accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE,
+    #                                               DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+    #         if (prev_time_spent - time_spent) > 50:
+    #             prev_time_spent = time_spent
+    #             best_batch_size = batch_size
+    #         else:
+    #             break
+    #     except:
+    #         break
+    #
+    # # try different number of filters
+    # best_num_filters_1 = DEFAULT_NUM_FILTERS_1
+    # best_num_filters_2 = DEFAULT_NUM_FILTERS_2
+    # num_filters_1 = DEFAULT_NUM_FILTERS_1 / 2
+    # num_filters_2 = DEFAULT_NUM_FILTERS_2 / 2
+    # best_accuracy = 0
+    # for i in range(1, 10):
+    #     num_filters_1 = num_filters_1 * 2
+    #     num_filters_2 = num_filters_2 * 2
+    #     accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE, num_filters_1, num_filters_2)
+    #     if time_spent > 300:
+    #         break
+    #     if accuracy > best_accuracy:
+    #         accuracy = best_accuracy
+    #         best_num_filters_1 = num_filters_1
+    #         best_num_filters_2 = num_filters_2
+
+    # then try some cross-dimensional combinations
