@@ -188,7 +188,7 @@ if __name__ == '__main__':
 
     accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
                                           DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
-    print(f"The result for using all default values, accuracy is: {accuracy}, time spent is: {time_spent}")
+    print(f"The result for using all default values, accuracy is: {accuracy}%, time spent is: {time_spent}")
 
     # try number of epochs = 20 to find out the optimal number of epoch.
     MINIST_Fashion(20, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1,
@@ -204,7 +204,7 @@ if __name__ == '__main__':
         if accuracy > best_accuracy:
             best_accuracy = accuracy
             best_dropout_rate = dropout_rate
-    print(f"the best dropout rate is: {best_dropout_rate}, and the accuracy is: {best_accuracy}")
+    print(f"the best dropout rate is: {best_dropout_rate}, and the accuracy is: {best_accuracy}%")
 
     # try different learning rate to find the optimal
     best_learning_rate = DEFAULT_LEARNING_RATE
@@ -216,7 +216,7 @@ if __name__ == '__main__':
         if accuracy > best_accuracy:
             best_accuracy = accuracy
             best_learning_rate = learning_rate
-    print(f"the best learning rate is: {best_learning_rate}, and the accuracy is: {best_accuracy}")
+    print(f"the best learning rate is: {best_learning_rate}, and the accuracy is: {best_accuracy}%")
 
     # try different batch size to the find the optimal
     best_batch_size = DEFAULT_BATCH_SIZE
@@ -257,8 +257,41 @@ if __name__ == '__main__':
             best_num_filters_1 = num_filters_1
             best_num_filters_2 = num_filters_2
     print(
-        f"the best number of filter is: {best_num_filters_1} and {best_num_filters_2}, and the best accuracy is {best_accuracy}")
+        f"the best number of filter is: {best_num_filters_1} and {best_num_filters_2}, and the best accuracy is {best_accuracy}%")
 
-    # then try some cross-dimensional combinations
+    # try different learning rate with the optimal dropout rate
+    best_learning_rate_2 = best_learning_rate
+    best_accuracy = 0
+    for learning_rate in range(1, 15):
+        learning_rate = learning_rate * 0.01
+        accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, best_dropout_rate, learning_rate,
+                                              DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_learning_rate_2 = learning_rate
+    print(f"the best learning rate with optimal dropout rate is: {best_learning_rate_2}, and the accuracy is: {best_accuracy}%")
+
+    # try different number of filters using optimal dropout rate and best learning rate
+    best_num_filters_1_2 = best_num_filters_1
+    best_num_filters_2_2 = best_num_filters_2
+    num_filters_1_2 = DEFAULT_NUM_FILTERS_1 / 2
+    num_filters_2_2 = DEFAULT_NUM_FILTERS_2 / 2
+    best_accuracy = 0
+    time_spent = 0
+    for i in range(1, 10):
+        num_filters_1_2 = int(num_filters_1_2 * 2)
+        num_filters_2_2 = int(num_filters_2_2 * 2)
+        accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, best_dropout_rate,
+                                              best_learning_rate_2, num_filters_1_2, num_filters_2_2)
+        if time_spent > 300:
+            break
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_num_filters_1_2 = num_filters_1_2
+            best_num_filters_2_2 = num_filters_2_2
+    print(
+        f"the best number of filter with optimal dropout rate and learning rate is: {best_num_filters_1_2} and {best_num_filters_2_2}, and the best accuracy is {best_accuracy}%")
 
     # try all best dimensions
+    accuracy, time_spent = MINIST_Fashion(15, best_batch_size, best_dropout_rate, best_learning_rate_2, best_num_filters_1_2, best_num_filters_2_2)
+    print(f"the best combined result: accuracy is {accuracy}, and time spent is {time_spent}")
