@@ -97,9 +97,9 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
             loss.backward()
             optimizer.step()
             if batch_idx % log_interval == 0:
-                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                    epoch, batch_idx * len(data), len(train_loader.dataset),
-                           100. * batch_idx / len(train_loader), loss.item()))
+                # print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                #     epoch, batch_idx * len(data), len(train_loader.dataset),
+                #            100. * batch_idx / len(train_loader), loss.item()))
                 train_losses.append(loss.item())
                 train_counter.append(
                     (batch_idx * 64) + ((epoch - 1) * len(train_loader.dataset)))
@@ -122,7 +122,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset)))
-        accuracy = 100. * correct / len(test_loader.dataset)
+        cur_accuracy = torch.round(100. * correct / len(test_loader.dataset))
 
         # evaluate the model by printing confusion matrix
         y_true = []
@@ -140,14 +140,16 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         print(cm)
 
         # evaluate the model by printing time used
-        time_spent = round(time_stop - time_start)
-        print(f"time spent: {time_spent} s")
-        return accuracy, time_spent
+        cur_time_spent = round(time_stop - time_start)
+        print(f"time spent: {cur_time_spent} s")
+        return cur_accuracy, cur_time_spent
 
-    accuracy, time_spent = test()
+    test()
+    accuracy = 0
+    time_spent = 0
     for epoch in range(1, n_epochs + 1):
         train(epoch)
-        test()
+        accuracy, time_spent = test()
 
     # evaluate the model by printing the loss
     fig = plt.figure()
@@ -184,9 +186,13 @@ if __name__ == '__main__':
     DEFAULT_NUM_FILTERS_1 = 10
     DEFAULT_NUM_FILTERS_2 = 20
 
+    accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
+                                          DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+    print(f"The result for using all default values, accuracy is: {accuracy}, time spent is: {time_spent}")
+
     # try number of epochs = 20 to find out the optimal number of epoch.
-    # MINIST_Fashion(20, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1,
-    #                DEFAULT_NUM_FILTERS_2)
+    MINIST_Fashion(20, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1,
+                   DEFAULT_NUM_FILTERS_2)
 
     # try different drop out rate to find the optimal dropout rate
     best_dropout_rate = DEFAULT_DROPOUT_RATE
@@ -200,51 +206,59 @@ if __name__ == '__main__':
             best_dropout_rate = dropout_rate
     print(f"the best dropout rate is: {best_dropout_rate}, and the accuracy is: {best_accuracy}")
 
-    # # try different learning rate to find the optimal
-    # best_learning_rate = DEFAULT_LEARNING_RATE
-    # best_accuracy = 0
-    # for learning_rate in range(1, 15):
-    #     learning_rate = learning_rate * 0.01
-    #     accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, learning_rate,
-    #                                           DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
-    #     if accuracy > best_accuracy:
-    #         best_accuracy = accuracy
-    #         best_learning_rate = learning_rate
-    #
-    # # try different batch size to the find the optimal
-    # best_batch_size = DEFAULT_BATCH_SIZE
-    # batch_size = DEFAULT_BATCH_SIZE
-    # accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
-    #                                       DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
-    # prev_time_spent = time_spent
-    # while True:
-    #     batch_size = batch_size * 2
-    #     try:
-    #         accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE,
-    #                                               DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
-    #         if (prev_time_spent - time_spent) > 50:
-    #             prev_time_spent = time_spent
-    #             best_batch_size = batch_size
-    #         else:
-    #             break
-    #     except:
-    #         break
-    #
-    # # try different number of filters
-    # best_num_filters_1 = DEFAULT_NUM_FILTERS_1
-    # best_num_filters_2 = DEFAULT_NUM_FILTERS_2
-    # num_filters_1 = DEFAULT_NUM_FILTERS_1 / 2
-    # num_filters_2 = DEFAULT_NUM_FILTERS_2 / 2
-    # best_accuracy = 0
-    # for i in range(1, 10):
-    #     num_filters_1 = num_filters_1 * 2
-    #     num_filters_2 = num_filters_2 * 2
-    #     accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE, num_filters_1, num_filters_2)
-    #     if time_spent > 300:
-    #         break
-    #     if accuracy > best_accuracy:
-    #         accuracy = best_accuracy
-    #         best_num_filters_1 = num_filters_1
-    #         best_num_filters_2 = num_filters_2
+    # try different learning rate to find the optimal
+    best_learning_rate = DEFAULT_LEARNING_RATE
+    best_accuracy = 0
+    for learning_rate in range(1, 15):
+        learning_rate = learning_rate * 0.01
+        accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, learning_rate,
+                                              DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_learning_rate = learning_rate
+    print(f"the best learning rate is: {best_learning_rate}, and the accuracy is: {best_accuracy}")
+
+    # try different batch size to the find the optimal
+    best_batch_size = DEFAULT_BATCH_SIZE
+    batch_size = DEFAULT_BATCH_SIZE
+    accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
+                                          DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+    prev_time_spent = time_spent
+    while True:
+        batch_size = batch_size * 2
+        try:
+            accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE,
+                                                  DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
+            if (prev_time_spent - time_spent) > 25:
+                prev_time_spent = time_spent
+                best_batch_size = batch_size
+            else:
+                break
+        except:
+            break
+    print(f"the best batch size is: {best_batch_size}")
+
+    # try different number of filters
+    best_num_filters_1 = DEFAULT_NUM_FILTERS_1
+    best_num_filters_2 = DEFAULT_NUM_FILTERS_2
+    num_filters_1 = DEFAULT_NUM_FILTERS_1 / 2
+    num_filters_2 = DEFAULT_NUM_FILTERS_2 / 2
+    best_accuracy = 0
+    time_spent = 0
+    for i in range(1, 10):
+        num_filters_1 = int(num_filters_1 * 2)
+        num_filters_2 = int(num_filters_2 * 2)
+        accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE,
+                                              DEFAULT_LEARNING_RATE, num_filters_1, num_filters_2)
+        if time_spent > 300:
+            break
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_num_filters_1 = num_filters_1
+            best_num_filters_2 = num_filters_2
+    print(
+        f"the best number of filter is: {best_num_filters_1} and {best_num_filters_2}, and the best accuracy is {best_accuracy}")
 
     # then try some cross-dimensional combinations
+
+    # try all best dimensions
