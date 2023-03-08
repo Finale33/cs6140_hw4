@@ -14,7 +14,7 @@ training_set_path = "/Users/jiahuizou/Desktop/6140/project4/greek_train"
 
 testing_set_path = "/Users/jiahuizou/Desktop/6140/project4/greek_test"
 
-model_path = "/Users/jiahuizou/Desktop/6140/project4/model.pth"
+model_path = "/Users/jiahuizou/Desktop/6140/project4/MNIST/model.pth"
 
 
 def Greek_Letter():
@@ -29,10 +29,10 @@ def Greek_Letter():
             x = torchvision.transforms.functional.center_crop(x, (28, 28))
             return torchvision.transforms.functional.invert(x)
 
-    n_epochs = 20
+    n_epochs = 100
     batch_size_train = 1
     batch_size_test = 9
-    learning_rate = 0.01
+    learning_rate = 0.5
     momentum = 0.5
     log_interval = 10
 
@@ -85,6 +85,8 @@ def Greek_Letter():
 
     network = Net()
 
+    print(network)
+
     network.load_state_dict(torch.load(model_path))
     # freezes the parameters for the whole network
     for param in network.parameters():
@@ -95,7 +97,7 @@ def Greek_Letter():
     optimizer = optim.SGD(network.parameters(), lr=learning_rate,
                           momentum=momentum)
 
-
+    print(network)
 
     train_losses = []
     train_counter = []
