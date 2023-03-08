@@ -85,14 +85,16 @@ def Greek_Letter():
 
     network = Net()
 
-    # load model
     network.load_state_dict(torch.load(model_path))
     # freezes the parameters for the whole network
-    for param in network.conv1.parameters():
+    for param in network.parameters():
         param.requires_grad = False
+
+    network.fc2 = nn.Linear(50, 3)
 
     optimizer = optim.SGD(network.parameters(), lr=learning_rate,
                           momentum=momentum)
+
 
 
     train_losses = []
