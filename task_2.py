@@ -7,13 +7,13 @@ import torch.optim as optim
 import matplotlib as mpl
 import time
 from sklearn.metrics import confusion_matrix
+import const
 
 mpl.use('TkAgg')
 
-file_location = '/Users/YihanXu/Desktop/CS6140/project 4'
 
-
-def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_filters_1, num_filters_2):
+def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_filters_1, num_filters_2,
+                   is_3_layers=False):
     # setting up hyper parameters
     batch_size_test = 1000
     momentum = 0.5
@@ -25,7 +25,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
 
     # loading dataset
     train_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.FashionMNIST(file_location, train=True, download=True,
+        torchvision.datasets.FashionMNIST(const.FILE_ROOT, train=True, download=True,
                                           transform=torchvision.transforms.Compose([
                                               torchvision.transforms.ToTensor(),
                                               torchvision.transforms.Normalize(
@@ -34,7 +34,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         batch_size=batch_size_train, shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.FashionMNIST(file_location, train=False, download=True,
+        torchvision.datasets.FashionMNIST(const.FILE_ROOT, train=False, download=True,
                                           transform=torchvision.transforms.Compose([
                                               torchvision.transforms.ToTensor(),
                                               torchvision.transforms.Normalize(
@@ -47,18 +47,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
 
     print(example_data.shape)
 
-    # plotting some examples
-    plt.figure()
-    for i in range(6):
-        plt.subplot(2, 3, i + 1)
-        plt.tight_layout()
-        plt.imshow(example_data[i + 20][0], cmap='gray', interpolation='none')
-        plt.title("Ground Truth: {}".format(example_targets[i]))
-        plt.xticks([])
-        plt.yticks([])
-    plt.show()
-
-    # building the neural network
+    # Network with 2 layers
     class Net(nn.Module):
         def __init__(self):
             super(Net, self).__init__()
@@ -77,7 +66,30 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
             x = self.fc2(x)
             return F.log_softmax(x)
 
+    # Network with 3 layers
+    class Net2(nn.Module):
+        def __init__(self):
+            super(Net2, self).__init__()
+            self.conv1 = nn.Conv2d(1, 10, kernel_size=3)  # 28-3+1 = 26 * 26 * 10
+            self.conv2 = nn.Conv2d(10, 20, kernel_size=2)  # 13-2+1 = 12 * 12 * 20
+            self.conv3 = nn.Conv2d(20, 30, kernel_size=3)  # 6-3+1 = 4*4*30
+            self.conv3_drop = nn.Dropout2d()
+            self.fc1 = nn.Linear(480, 50)  # 4*4*30
+            self.fc2 = nn.Linear(50, 10)
+
+        def forward(self, x):
+            x = F.relu(F.max_pool2d(self.conv1(x), 2))  # 26/2 = 13 * 13 * 10
+            x = F.relu(F.max_pool2d(self.conv2(x), 2))  # 12/2 = 6 * 6 * 20
+            x = F.relu(self.conv3_drop(self.conv3(x)))  # 4*4*30
+            x = x.view(-1, 480)
+            x = F.relu(self.fc1(x))
+            x = F.dropout(x, training=self.training)
+            x = self.fc2(x)
+            return F.log_softmax(x)
+
     network = Net()
+    if is_3_layers:
+        network = Net2()
     optimizer = optim.SGD(network.parameters(), lr=learning_rate,
                           momentum=momentum)
 
@@ -103,8 +115,8 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
                 train_losses.append(loss.item())
                 train_counter.append(
                     (batch_idx * 64) + ((epoch - 1) * len(train_loader.dataset)))
-                torch.save(network.state_dict(), f"{file_location}/model.pth")
-                torch.save(optimizer.state_dict(), f"{file_location}/optimizer.pth")
+                torch.save(network.state_dict(), const.TASK2_MODEL_PATH)
+                torch.save(optimizer.state_dict(), const.TASK2_OPTIMIZER_PATH)
 
     def test():
         network.eval()
@@ -148,8 +160,10 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
     accuracy = 0
     time_spent = 0
     for epoch in range(1, n_epochs + 1):
+        print("Epoch times with 2 layers: ", epoch)
         train(epoch)
         accuracy, time_spent = test()
+        print()
 
     # evaluate the model by printing the loss
     fig = plt.figure()
@@ -158,7 +172,6 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
     plt.legend(['Train Loss', 'Test Loss'], loc='upper right')
     plt.xlabel('number of training examples seen')
     plt.ylabel('negative log likelihood loss')
-    plt.show()
 
     with torch.no_grad():
         output = network(example_data)
@@ -173,7 +186,6 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
             output.data.max(1, keepdim=True)[1][i].item()))
         plt.xticks([])
         plt.yticks([])
-    plt.show()
     return accuracy, time_spent
 
 
@@ -186,7 +198,8 @@ if __name__ == '__main__':
     DEFAULT_NUM_FILTERS_1 = 10
     DEFAULT_NUM_FILTERS_2 = 20
 
-    accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
+    accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, DEFAULT_DROPOUT_RATE,
+                                          DEFAULT_LEARNING_RATE,
                                           DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
     print(f"The result for using all default values, accuracy is: {accuracy}%, time spent is: {time_spent}")
 
@@ -269,7 +282,8 @@ if __name__ == '__main__':
         if accuracy > best_accuracy:
             best_accuracy = accuracy
             best_learning_rate_2 = learning_rate
-    print(f"the best learning rate with optimal dropout rate is: {best_learning_rate_2}, and the accuracy is: {best_accuracy}%")
+    print(
+        f"the best learning rate with optimal dropout rate is: {best_learning_rate_2}, and the accuracy is: {best_accuracy}%")
 
     # try different number of filters using optimal dropout rate and best learning rate
     best_num_filters_1_2 = best_num_filters_1
@@ -293,5 +307,10 @@ if __name__ == '__main__':
         f"the best number of filter with optimal dropout rate and learning rate is: {best_num_filters_1_2} and {best_num_filters_2_2}, and the best accuracy is {best_accuracy}%")
 
     # try all best dimensions
-    accuracy, time_spent = MINIST_Fashion(15, best_batch_size, best_dropout_rate, best_learning_rate_2, best_num_filters_1_2, best_num_filters_2_2)
-    print(f"the best combined result: accuracy is {accuracy}, and time spent is {time_spent}")
+    accuracy, time_spent = MINIST_Fashion(15, best_batch_size, best_dropout_rate, best_learning_rate_2,
+                                          best_num_filters_1_2, best_num_filters_2_2)
+    print(f"the best combined result: accuracy is {accuracy}, and time spent is {time_spent}s")
+
+    # try all best dimensions with one more layer
+    accuracy, time_spent = MINIST_Fashion(15, 128, 0.001, 0.11, 40, 80, True)
+    print(f"the best combined result with 3 layers: accuracy is {accuracy}, and time spent is {time_spent}s")

@@ -4,17 +4,13 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from task_1 import Net
 
 # This is a sample Python script.
 
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-training_set_path = "/Users/jiahuizou/Desktop/6140/project4/greek_train"
-
-testing_set_path = "/Users/jiahuizou/Desktop/6140/project4/greek_test"
-
-model_path = "/Users/jiahuizou/Desktop/6140/project4/MNIST/model.pth"
+import const
 
 
 def Greek_Letter():
@@ -42,7 +38,7 @@ def Greek_Letter():
 
     # DataLoader for the Greek data set
     train_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.ImageFolder(training_set_path,
+        torchvision.datasets.ImageFolder(const.TRAININT_SET_PATH,
                                          transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                                                                    GreekTransform(),
                                                                                    torchvision.transforms.Normalize(
@@ -51,7 +47,7 @@ def Greek_Letter():
         shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.ImageFolder(testing_set_path,
+        torchvision.datasets.ImageFolder(const.TESTING_SET_PATH,
                                          transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                                                                    GreekTransform(),
                                                                                    torchvision.transforms.Normalize(
@@ -64,30 +60,11 @@ def Greek_Letter():
 
     print(example_data.shape)
 
-    # building the neural network
-    class Net(nn.Module):
-        def __init__(self):
-            super(Net, self).__init__()
-            self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-            self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-            self.conv2_drop = nn.Dropout2d()
-            self.fc1 = nn.Linear(320, 50)
-            self.fc2 = nn.Linear(50, 10)
-
-        def forward(self, x):
-            x = F.relu(F.max_pool2d(self.conv1(x), 2))
-            x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-            x = x.view(-1, 320)
-            x = F.relu(self.fc1(x))
-            x = F.dropout(x, training=self.training)
-            x = self.fc2(x)
-            return F.log_softmax(x)
-
     network = Net()
 
     print(network)
 
-    network.load_state_dict(torch.load(model_path))
+    network.load_state_dict(torch.load(const.TASK1_MODEL_PATH))
     # freezes the parameters for the whole network
     for param in network.parameters():
         param.requires_grad = False
@@ -121,8 +98,8 @@ def Greek_Letter():
                 train_losses.append(loss.item())
                 train_counter.append(
                     (batch_idx * 64) + ((epoch - 1) * len(train_loader.dataset)))
-                torch.save(network.state_dict(), '/Users/jiahuizou/Desktop/6140/project4/model.pth')
-                torch.save(optimizer.state_dict(), '/Users/jiahuizou/Desktop/6140/project4/optimizer.pth')
+                torch.save(network.state_dict(), const.TASK3_MODEL_PATH)
+                torch.save(optimizer.state_dict(), const.TASK3_OPTIMIZER_PATH)
 
     def test():
         network.eval()
