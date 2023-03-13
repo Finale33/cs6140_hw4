@@ -37,8 +37,8 @@ def evaluate_model(model, X_test, y_test):
     print(cm)
 
 
-# free forward architecture with 2 hidden layer
-def free_forward_architecture(X_train, y_train, X_test, y_test):
+# feed forward architecture with 2 hidden layer
+def feed_forward_architecture(X_train, y_train, X_test, y_test):
     # Define the neural network architecture
     model = keras.Sequential([
         keras.layers.Dense(32, activation='relu', input_shape=(11,)),
@@ -55,6 +55,7 @@ def free_forward_architecture(X_train, y_train, X_test, y_test):
     evaluate_model(model, X_test, y_test)
 
 
+# recurrent neural network architecture
 def recurrent_architecture(X_train, y_train, X_test, y_test):
     # Scale the features
     sc = StandardScaler()
@@ -93,5 +94,5 @@ if __name__ == '__main__':
     X_tst = test_df.drop(['HeartDisease'], axis=1)
     y_tst = test_df['HeartDisease']
 
-    # free_forward_architecture(X_trn, y_trn, X_tst, y_tst)
+    feed_forward_architecture(X_trn, y_trn, X_tst, y_tst)
     recurrent_architecture(X_trn, y_trn, X_tst, y_tst)
