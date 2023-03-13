@@ -9,17 +9,17 @@ import const
 def normalize_dataset(df):
     # Encode categorical variables
     encoder = LabelEncoder()
-    df['sex'] = encoder.fit_transform(df['sex'])
-    df['chestpaintype'] = encoder.fit_transform(df['chestpaintype'])
-    df['fastingBS'] = encoder.fit_transform(df['fastingBS'])
+    df['Sex'] = encoder.fit_transform(df['Sex'])
+    df['ChestPainType'] = encoder.fit_transform(df['ChestPainType'])
+    df['FastingBS'] = encoder.fit_transform(df['FastingBS'])
     df['RestingECG'] = encoder.fit_transform(df['RestingECG'])
     df['ExerciseAngina'] = encoder.fit_transform(df['ExerciseAngina'])
     df['ST_Slope'] = encoder.fit_transform(df['ST_Slope'])
 
     # Normalize numerical variables
     scaler = StandardScaler()
-    df[['age', 'restingBP', 'cholesterol', 'MaxHR', 'Oldpeak']] = scaler.fit_transform(
-        df[['age', 'restingBP', 'cholesterol', 'MaxHR', 'Oldpeak']])
+    df[['Age', 'RestingBP', 'Cholesterol', 'MaxHR', 'Oldpeak']] = scaler.fit_transform(
+        df[['Age', 'RestingBP', 'Cholesterol', 'MaxHR', 'Oldpeak']])
 
 
 # simple architecture with 2 hidden layer
