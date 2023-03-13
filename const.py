@@ -20,7 +20,7 @@ TRAININT_SET_PATH = f"{DATA_ROOT}/greek_train"
 
 TESTING_SET_PATH = f"{DATA_ROOT}/greek_test"
 
-TESTING_SET_WITH_15_SAMPLES = f"{DATA_ROOT}/greek_test_with_15_samples"
+TESTING_SET_WITH_15_SAMPLES = f"{DATA_ROOT}/greek_test 2"
 
 HEART_DISEASE_TRAIN_PATH = f"{DATA_ROOT}/heart_train_718.csv"
 
