@@ -45,7 +45,7 @@ def MINIST_Tutorial():
 
     # loading dataset
     train_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.MNIST(const.FILE_ROOT, train=True, download=True,
+        torchvision.datasets.MNIST(const.DATA_ROOT, train=True, download=True,
                                    transform=torchvision.transforms.Compose([
                                        torchvision.transforms.ToTensor(),
                                        torchvision.transforms.Normalize(
@@ -54,7 +54,7 @@ def MINIST_Tutorial():
         batch_size=batch_size_train, shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.MNIST(const.FILE_ROOT, train=False, download=True,
+        torchvision.datasets.MNIST(const.DATA_ROOT, train=False, download=True,
                                    transform=torchvision.transforms.Compose([
                                        torchvision.transforms.ToTensor(),
                                        torchvision.transforms.Normalize(

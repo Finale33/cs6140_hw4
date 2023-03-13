@@ -25,7 +25,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
 
     # loading dataset
     train_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.FashionMNIST(const.FILE_ROOT, train=True, download=True,
+        torchvision.datasets.FashionMNIST(const.DATA_ROOT, train=True, download=True,
                                           transform=torchvision.transforms.Compose([
                                               torchvision.transforms.ToTensor(),
                                               torchvision.transforms.Normalize(
@@ -34,7 +34,7 @@ def MINIST_Fashion(n_epochs, batch_size_train, dropout_rate, learning_rate, num_
         batch_size=batch_size_train, shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.FashionMNIST(const.FILE_ROOT, train=False, download=True,
+        torchvision.datasets.FashionMNIST(const.DATA_ROOT, train=False, download=True,
                                           transform=torchvision.transforms.Compose([
                                               torchvision.transforms.ToTensor(),
                                               torchvision.transforms.Normalize(
