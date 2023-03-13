@@ -1,8 +1,8 @@
 FILE_ROOT = '/Users/YihanXu/Desktop/CS6140/project 4/cs6140_hw4'
 
-TRAININT_SET_PATH = f"{FILE_ROOT}/greek_train"
+TRAININT_SET_PATH = f"{FILE_ROOT}/dataset/greek_train"
 
-TESTING_SET_PATH = f"{FILE_ROOT}/greek_test"
+TESTING_SET_PATH = f"{FILE_ROOT}/dataset/greek_test"
 
 TASK1_MODEL_PATH = f"{FILE_ROOT}/model.pth"
 
