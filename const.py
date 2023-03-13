@@ -1,4 +1,4 @@
-FILE_ROOT = '/Users/YihanXu/Desktop/CS6140/project 4'
+FILE_ROOT = '/Users/YihanXu/Desktop/CS6140/project 4/cs6140_hw4'
 
 TRAININT_SET_PATH = f"{FILE_ROOT}/greek_train"
 
@@ -16,6 +16,6 @@ TASK2_OPTIMIZER_PATH = f"{FILE_ROOT}/optimizer_task2.pth"
 
 TASK3_OPTIMIZER_PATH = f"{FILE_ROOT}/optimizer_task3.pth"
 
-HEART_DISEASE_TRAIN_PATH = f"{FILE_ROOT}/cs6140_hw4/dataset/heart_train_718.csv"
+HEART_DISEASE_TRAIN_PATH = f"{FILE_ROOT}/dataset/heart_train_718.csv"
 
-HEART_DISEASE_TEST_PATH = f"{FILE_ROOT}/cs6140_hw4/dataset/heart_test_200.csv"
+HEART_DISEASE_TEST_PATH = f"{FILE_ROOT}/dataset/heart_test_200.csv"
