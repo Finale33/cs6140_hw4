@@ -22,6 +22,7 @@ def normalize_dataset(df):
         df[['age', 'restingBP', 'cholesterol', 'MaxHR', 'Oldpeak']])
 
 
+# simple architecture with 2 hidden layer
 def simple_architecture(X_train, y_train, X_test, y_test):
     # Define the neural network architecture
     model = keras.Sequential([
@@ -44,8 +45,8 @@ def simple_architecture(X_train, y_train, X_test, y_test):
 
 if __name__ == '__main__':
     # Load heart disease dataset
-    training_df = pd.read_csv(const.TRAININT_SET_PATH)
-    test_df = pd.read_csv(const.TESTING_SET_PATH)
+    training_df = pd.read_csv(const.HEART_DISEASE_TRAIN_PATH)
+    test_df = pd.read_csv(const.HEART_DISEASE_TEST_PATH)
 
     normalize_dataset(training_df)
     normalize_dataset(test_df)
