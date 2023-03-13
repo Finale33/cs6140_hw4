@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import confusion_matrix, accuracy_score
 import tensorflow as tf
 from tensorflow import keras
 import const
@@ -22,8 +23,22 @@ def normalize_dataset(df):
         df[['Age', 'RestingBP', 'Cholesterol', 'MaxHR', 'Oldpeak']])
 
 
-# simple architecture with 2 hidden layer
-def simple_architecture(X_train, y_train, X_test, y_test):
+def evaluate_model(model, X_test, y_test):
+    # Evaluate the model on the test set
+    score = model.evaluate(X_test, y_test, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
+
+    # Evaluate the model
+    y_pred = model.predict(X_test)
+    y_pred = np.round(y_pred)
+    cm = confusion_matrix(y_test, y_pred)
+    print('confusion matrix:')
+    print(cm)
+
+
+# free forward architecture with 2 hidden layer
+def free_forward_architecture(X_train, y_train, X_test, y_test):
     # Define the neural network architecture
     model = keras.Sequential([
         keras.layers.Dense(32, activation='relu', input_shape=(11,)),
@@ -37,10 +52,32 @@ def simple_architecture(X_train, y_train, X_test, y_test):
     # Train the model
     model.fit(X_train, y_train, epochs=100, batch_size=16, verbose=1)
 
-    # Evaluate the model on the test set
-    score = model.evaluate(X_test, y_test, verbose=0)
-    print('Test loss:', score[0])
-    print('Test accuracy:', score[1])
+    evaluate_model(model, X_test, y_test)
+
+
+def recurrent_architecture(X_train, y_train, X_test, y_test):
+    # Scale the features
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    X_test = sc.transform(X_test)
+
+    # Reshape the data to have 3D input shape for the RNN
+    X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
+    X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+
+    # Define the model
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.SimpleRNN(64, activation='relu', input_shape=(1, X_train.shape[2])),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    # Train the model
+    model.fit(X_train, y_train, batch_size=32, epochs=100)
+
+    evaluate_model(model, X_test, y_test)
 
 
 if __name__ == '__main__':
@@ -51,9 +88,10 @@ if __name__ == '__main__':
     normalize_dataset(training_df)
     normalize_dataset(test_df)
 
-    X_train = training_df.drop(['HeartDisease'], axis=1)
-    y_train = training_df['HeartDisease']
-    X_test = test_df.drop(['HeartDisease'], axis=1)
-    y_test = test_df['HeartDisease']
+    X_trn = training_df.drop(['HeartDisease'], axis=1)
+    y_trn = training_df['HeartDisease']
+    X_tst = test_df.drop(['HeartDisease'], axis=1)
+    y_tst = test_df['HeartDisease']
 
-    simple_architecture(X_train, y_train, X_test, y_test)
+    # free_forward_architecture(X_trn, y_trn, X_tst, y_tst)
+    recurrent_architecture(X_trn, y_trn, X_tst, y_tst)
