@@ -37,7 +37,7 @@ def evaluate_model(model, X_test, y_test):
     print(cm)
 
 
-# feed forward architecture with 2 hidden layer
+# feed forward architecture with 2 hidden layers
 def feed_forward_architecture(X_train, y_train, X_test, y_test):
     # Define the neural network architecture
     model = keras.Sequential([
@@ -50,12 +50,34 @@ def feed_forward_architecture(X_train, y_train, X_test, y_test):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    model.fit(X_train, y_train, epochs=100, batch_size=16, verbose=1)
+    model.fit(X_train, y_train, epochs=100, batch_size=32, verbose=1)
 
     evaluate_model(model, X_test, y_test)
 
 
-# recurrent neural network architecture
+# feed forward architecture with 3 hidden layers and dropout layer
+def feed_forward_architecture_2(X_train, y_train, X_test, y_test):
+    # Define the neural network architecture
+    model = keras.Sequential([
+        keras.layers.Dense(32, activation='relu', input_shape=(11,)),
+        keras.layers.Dense(16, activation='relu'),
+        keras.layers.Dense(8, activation='relu'),
+        # Add a Dropout layer with rate 0.2
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    # Train the model
+    model.fit(X_train, y_train, epochs=100, batch_size=32, verbose=1)
+
+    # Evaluate the model
+    evaluate_model(model, X_test, y_test)
+
+
+# recurrent neural network architecture using simpleRNN
 def recurrent_architecture(X_train, y_train, X_test, y_test):
     # Scale the features
     sc = StandardScaler()
@@ -81,6 +103,33 @@ def recurrent_architecture(X_train, y_train, X_test, y_test):
     evaluate_model(model, X_test, y_test)
 
 
+# recurrent neural network architecture using LSTM
+def recurrent_architecture_2(X_train, y_train, X_test, y_test):
+    # Scale the features
+    sc = StandardScaler()
+    X_train = sc.fit_transform(X_train)
+    X_test = sc.transform(X_test)
+
+    # Reshape the data to have 3D input shape for the RNN
+    X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
+    X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+
+    # Define the model with an LSTM layer
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.LSTM(64, activation='relu', input_shape=(1, X_train.shape[2])),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    # Train the model
+    model.fit(X_train, y_train, batch_size=32, epochs=100)
+
+    # Evaluate the model
+    evaluate_model(model, X_test, y_test)
+
+
 if __name__ == '__main__':
     # Load heart disease dataset
     training_df = pd.read_csv(const.HEART_DISEASE_TRAIN_PATH)
@@ -95,4 +144,6 @@ if __name__ == '__main__':
     y_tst = test_df['HeartDisease']
 
     feed_forward_architecture(X_trn, y_trn, X_tst, y_tst)
+    feed_forward_architecture_2(X_trn, y_trn, X_tst, y_tst)
     recurrent_architecture(X_trn, y_trn, X_tst, y_tst)
+    recurrent_architecture_2(X_trn, y_trn, X_tst, y_tst)
