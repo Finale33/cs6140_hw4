@@ -14,22 +14,16 @@ mpl.use('TkAgg')
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)   # 300-5+1= 296 * 296 * 10
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)  # 148-5+1= 144 * 144 * 20
-        self.conv3 = nn.Conv2d(20, 30, kernel_size=5)  # 72-5+1= 68 * 68 * 30
-        self.conv4 = nn.Conv2d(30, 40, kernel_size=5)  # 34-5+1= 30 * 30 * 40
-        self.conv5 = nn.Conv2d(40, 50, kernel_size=5)  # 15-5+1= 11 * 11 * 50
-        self.conv5_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(6050, 50)
+        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)   # 144-5+1= 140 * 140 * 10
+        self.conv2 = nn.Conv2d(10, 20, kernel_size=6)  # 35-6+1= 30 * 30 * 20
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(720, 50)
         self.fc2 = nn.Linear(50, 10)
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))                      # 296/2 = 148 * 148 * 10
-        x = F.relu(F.max_pool2d(self.conv2(x), 2))                      # 144/2 = 72 * 72 * 20
-        x = F.relu(F.max_pool2d(self.conv3(x), 2))                      # 68/2 = 34*34*30
-        x = F.relu(F.max_pool2d(self.conv4(x), 2))                      # 30/2 = 15*15*50
-        x = F.relu(self.conv5_drop(self.conv5(x)))                      # 11 * 11 * 50
-        x = x.view(-1, 6050)
+        x = F.relu(F.max_pool2d(self.conv1(x), 4))                      # 140/4 = 35 * 35 * 10
+        x = F.relu(F.max_pool2d(self.conv2(x), 5))                      # 30/5 = 6 * 6 * 20
+        x = x.view(-1, 720)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
@@ -45,7 +39,7 @@ def MINIST_Tutorial():
         def __call__(self, x):
             x = torchvision.transforms.functional.rgb_to_grayscale(x)
             x = torchvision.transforms.functional.affine(x, 0, (0, 0), 36 / 128, 0)
-            x = torchvision.transforms.functional.center_crop(x, (300, 300))
+            x = torchvision.transforms.functional.center_crop(x, (144, 144))
             return torchvision.transforms.functional.invert(x)
 
     # setting up hyper parameters
@@ -93,6 +87,7 @@ def MINIST_Tutorial():
         plt.title("Ground Truth: {}".format(example_targets[i]))
         plt.xticks([])
         plt.yticks([])
+    plt.show()
 
     network = Net()
     optimizer = optim.SGD(network.parameters(), lr=learning_rate,
@@ -165,6 +160,8 @@ def MINIST_Tutorial():
         plt.xticks([])
         plt.yticks([])
     plt.show()
+
+    print(network)
 
 
 # Press the green button in the gutter to run the script.
