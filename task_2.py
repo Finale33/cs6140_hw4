@@ -310,8 +310,8 @@ if __name__ == '__main__':
     # try all best dimensions
     accuracy, time_spent = MINIST_Fashion(15, best_batch_size, best_dropout_rate, best_learning_rate_2,
                                           best_num_filters_1_2, best_num_filters_2_2)
-    print(f"the best combined result: accuracy is {accuracy}, and time spent is {time_spent}s")
+    print(f"the best combined result: accuracy is {accuracy}%, and time spent is {time_spent}s")
 
     # try all best dimensions with one more layer
     accuracy, time_spent = MINIST_Fashion(15, 128, 0.001, 0.11, 40, 80, True)
-    print(f"the best combined result with 3 layers: accuracy is {accuracy}, and time spent is {time_spent}s")
+    print(f"the best combined result with 3 layers: accuracy is {accuracy}%, and time spent is {time_spent}s")
