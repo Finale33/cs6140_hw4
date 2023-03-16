@@ -236,14 +236,16 @@ if __name__ == '__main__':
     accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE, DEFAULT_LEARNING_RATE,
                                           DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
     prev_time_spent = time_spent
+    prev_accuracy = accuracy
     while True:
         batch_size = batch_size * 2
         try:
             accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, batch_size, DEFAULT_DROPOUT_RATE,
                                                   DEFAULT_LEARNING_RATE, DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
-            if (prev_time_spent - time_spent) > 25:
+            if (prev_time_spent - time_spent) > 2 and accuracy >= prev_accuracy:
                 prev_time_spent = time_spent
                 best_batch_size = batch_size
+                prev_accuracy = accuracy
             else:
                 break
         except:
