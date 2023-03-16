@@ -211,7 +211,6 @@ if __name__ == '__main__':
     best_dropout_rate = DEFAULT_DROPOUT_RATE
     best_accuracy = 0.00
     for dropout_rate in [0.01, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5]:
-        dropout_rate = dropout_rate * 0.01
         accuracy, time_spent = MINIST_Fashion(DEFAULT_N_EPOCH, DEFAULT_BATCH_SIZE, dropout_rate, DEFAULT_LEARNING_RATE,
                                               DEFAULT_NUM_FILTERS_1, DEFAULT_NUM_FILTERS_2)
         if accuracy > best_accuracy:
