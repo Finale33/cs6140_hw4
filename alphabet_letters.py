@@ -1,3 +1,8 @@
+"""
+CS6140 Project 3
+Jiahui Zou
+Yihan Xu
+"""
 import torch
 import torchvision
 import matplotlib.pyplot as plt
@@ -56,7 +61,7 @@ def MINIST_Tutorial():
 
     # DataLoader for the Greek data set
     train_loader = torch.utils.data.DataLoader(
-        torchvision.datasets.ImageFolder(const.TRAININT_SET_PATH_ALPHABET,
+        torchvision.datasets.ImageFolder(const.TRAINING_SET_PATH_ALPHABET,
                                          transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
                                                                                    GreekTransform(),
                                                                                    torchvision.transforms.Normalize(

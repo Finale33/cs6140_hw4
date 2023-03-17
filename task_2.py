@@ -1,3 +1,8 @@
+"""
+CS6140 Project 3
+Yihan Xu
+Jiahui Zou
+"""
 import torch
 import torchvision
 import matplotlib.pyplot as plt

@@ -1,3 +1,8 @@
+"""
+CS6140 Project 3
+Yihan Xu
+Jiahui Zou
+"""
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler

@@ -1,3 +1,8 @@
+"""
+CS6140 Project 3
+Jiahui Zou
+Yihan Xu
+"""
 from __future__ import print_function, division
 
 import torch
