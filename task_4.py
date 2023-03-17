@@ -37,6 +37,19 @@ def evaluate_model(model, X_test, y_test):
     print(cm)
 
 
+def print_model(model):
+    # Iterate over the layers and print out their properties
+    for i, layer in enumerate(model.layers):
+        print('Layer', i + 1, ':')
+        print('Name:', layer.name)
+        print('Input shape:', layer.input_shape)
+        print('Output shape:', layer.output_shape)
+        try:
+            print('Activation:', layer.activation)
+        except:
+            return
+
+
 # feed forward architecture with 2 hidden layers
 def feed_forward_architecture(X_train, y_train, X_test, y_test):
     # Define the neural network architecture
@@ -45,6 +58,8 @@ def feed_forward_architecture(X_train, y_train, X_test, y_test):
         keras.layers.Dense(16, activation='relu'),
         keras.layers.Dense(1, activation='sigmoid')
     ])
+
+    print_model(model)
 
     # Compile the model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -66,6 +81,8 @@ def feed_forward_architecture_2(X_train, y_train, X_test, y_test):
         keras.layers.Dropout(0.2),
         keras.layers.Dense(1, activation='sigmoid')
     ])
+
+    print_model(model)
 
     # Compile the model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -94,6 +111,8 @@ def recurrent_architecture(X_train, y_train, X_test, y_test):
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
 
+    print_model(model)
+
     # Compile the model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
@@ -119,6 +138,8 @@ def recurrent_architecture_2(X_train, y_train, X_test, y_test):
         tf.keras.layers.LSTM(64, activation='relu', input_shape=(1, X_train.shape[2])),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
+
+    print_model(model)
 
     # Compile the model
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
