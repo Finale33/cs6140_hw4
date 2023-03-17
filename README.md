@@ -45,7 +45,7 @@ The Extensions we have covered:
 
 Instructions on running extensions:
 - When testing additional samples for task 3, please replace the test_loader file path in task_3.py with const.TESTING_SET_WITH_15_SAMPLES.
-- To run imageNet_transfer_learning, please go to imageNet_transfer_learning.py and run main function.
+- To run imageNet_transfer_learning, please download the data from the tutorial website on canvas, then go to imageNet_transfer_learning.py and run main function.
 - To run alphabet_letters, please go to alphabet_letters.py and run main function.
 
 ## Travel days used
